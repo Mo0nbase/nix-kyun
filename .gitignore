@@ -1,0 +1,28 @@
+# Nix build outputs
+result
+result-*
+
+# Image files
+*.qcow2
+*.iso
+*.img
+
+# direnv
+.direnv
+.envrc
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
