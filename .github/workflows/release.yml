@@ -1,0 +1,88 @@
+name: Build and Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (optional)'
+        required: false
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build qcow2 image
+        run: |
+          nix build .#default -L
+
+      - name: Get image info
+        id: image-info
+        run: |
+          IMAGE_PATH=$(readlink -f result/nixos.qcow2)
+          IMAGE_SIZE=$(du -h "$IMAGE_PATH" | cut -f1)
+          echo "path=$IMAGE_PATH" >> $GITHUB_OUTPUT
+          echo "size=$IMAGE_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Compress image
+        run: |
+          cd result
+          xz -9 -T0 -v nixos.qcow2
+          mv nixos.qcow2.xz kyun-nixos-${{ github.ref_name }}.qcow2.xz
+          sha256sum kyun-nixos-${{ github.ref_name }}.qcow2.xz > kyun-nixos-${{ github.ref_name }}.qcow2.xz.sha256
+
+      - name: Upload image to release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'release'
+        with:
+          files: |
+            result/kyun-nixos-${{ github.ref_name }}.qcow2.xz
+            result/kyun-nixos-${{ github.ref_name }}.qcow2.xz.sha256
+          body: |
+            ## NixOS Cloud Image for Kyun.host
+
+            **Image size:** ${{ steps.image-info.outputs.size }} (uncompressed)
+
+            ### Installation
+
+            1. Download `kyun-nixos-${{ github.ref_name }}.qcow2.xz`
+            2. Verify checksum: `sha256sum -c kyun-nixos-${{ github.ref_name }}.qcow2.xz.sha256`
+            3. Decompress: `xz -d kyun-nixos-${{ github.ref_name }}.qcow2.xz`
+            4. Upload `kyun-nixos-${{ github.ref_name }}.qcow2` to kyun.host dashboard
+
+            ### Features
+            - NixOS 24.11
+            - Full cloud-init support
+            - Static networking (IPv4/IPv6)
+            - QEMU guest agent
+            - BTRFS with zstd compression
+
+            See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifact (workflow dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: kyun-nixos-image
+          path: |
+            result/kyun-nixos-*.qcow2.xz
+            result/kyun-nixos-*.qcow2.xz.sha256
+          retention-days: 30
