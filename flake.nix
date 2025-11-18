@@ -2,7 +2,7 @@
   description = "Kyun.host cloud-init qcow2 image builder";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
