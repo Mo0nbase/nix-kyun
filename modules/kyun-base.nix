@@ -7,9 +7,10 @@
 }:
 
 {
-  # Import hardware configuration for QEMU/KVM
+  # Import minimal profile and QEMU/KVM hardware config
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
+    (modulesPath + "/profiles/minimal.nix")
   ];
 
   # Minimal Nix settings
@@ -57,30 +58,6 @@
 
   # QEMU guest agent
   services.qemuGuest.enable = true;
-
-  # Minimize image size aggressively
-  documentation.enable = lib.mkDefault false;
-  documentation.nixos.enable = lib.mkDefault false;
-  documentation.man.enable = lib.mkDefault false;
-  documentation.info.enable = lib.mkDefault false;
-  documentation.doc.enable = lib.mkDefault false;
-
-  # Disable GUI/X11 completely
-  services.xserver.enable = lib.mkDefault false;
-  xdg.autostart.enable = lib.mkDefault false;
-  xdg.icons.enable = lib.mkDefault false;
-  xdg.mime.enable = lib.mkDefault false;
-  xdg.sounds.enable = lib.mkDefault false;
-
-  # Minimal locale support - only en_US
-  i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
-
-  # Disable unnecessary firmware
-  hardware.enableRedistributableFirmware = lib.mkDefault false;
-  hardware.enableAllFirmware = lib.mkDefault false;
-
-  # Don't include default NixOS packages
-  environment.defaultPackages = lib.mkDefault [ ];
 
   # System state version
   system.stateVersion = "24.11";
