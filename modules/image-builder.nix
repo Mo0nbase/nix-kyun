@@ -10,34 +10,27 @@
     }:
     {
       packages = {
-        # Build the qcow2 image using make-disk-image
-        default = import "${inputs.nixpkgs}/nixos/lib/make-disk-image.nix" {
-          inherit pkgs lib;
+        # Build the qcow2 image using nixos-generators
+        default = inputs.nixos-generators.nixosGenerate {
+          inherit pkgs;
+
+          # Use qcow2 format for cloud/VPS providers
+          format = "qcow";
 
           # Use our NixOS configuration
-          config = self.nixosConfigurations.kyun-cloud-init.config;
+          modules = [
+            ../modules/kyun-base.nix
+            {
+              # Override some settings for image generation
+              system.stateVersion = "24.11";
 
-          # Image format
-          format = "qcow2";
+              # Ensure the image is bootable
+              boot.loader.grub.device = "/dev/vda";
 
-          # Disk size (10GB)
-          diskSize = 10 * 1024;
-
-          # Partition table type - use hybrid for better compatibility
-          partitionTableType = "hybrid";
-
-          # Install bootloader
-          installBootLoader = true;
-
-          # Additional space for /boot
-          additionalSpace = "512M";
-
-          # Copy the system closure to the image
-          copyChannel = false;
-
-          # Set the root filesystem - make-disk-image will create it
-          # This overrides disko's filesystem config
-          fsType = "ext4";
+              # Set a reasonable disk size
+              virtualisation.diskSize = 10 * 1024; # 10GB
+            }
+          ];
         };
       };
 

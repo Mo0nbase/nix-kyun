@@ -34,7 +34,7 @@
   # Bootloader configuration for BIOS boot
   boot.loader.grub = {
     enable = true;
-    device = "nodev"; # make-disk-image will set this correctly
+    device = lib.mkDefault "/dev/vda"; # nixos-generators will override if needed
   };
 
   boot.loader.timeout = 3;
@@ -72,16 +72,10 @@
   # No swap by default
   swapDevices = [ ];
 
-  # Filesystem configuration for the image
-  # make-disk-image will create these, but we need to declare them
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
-    autoResize = true;
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
+  # Filesystem configuration
+  # nixos-generators will create the actual filesystems, but we need to declare them
+  fileSystems."/" = lib.mkDefault {
+    device = "/dev/vda1";
     fsType = "ext4";
   };
 
