@@ -30,15 +30,10 @@
     fsType = "ext4";
   };
 
-  # Debug kernel parameters - keep for troubleshooting boot issues
+  # Minimal kernel parameters
   boot.kernelParams = [
     "console=ttyS0,115200"
     "net.ifnames=0"
-    "earlyprintk=serial,ttyS0,115200"
-    "debug"
-    "loglevel=7"
-    "initcall_debug"
-    "boot.shell_on_fail"
   ];
 
   # Cloud-init support - minimal configuration

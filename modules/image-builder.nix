@@ -17,8 +17,8 @@
           modules = [
             ../modules/kyun-base.nix
             {
-              # Keep image size small (5GB virtual, compresses to ~500MB)
-              virtualisation.diskSize = 5 * 1024;
+              # Keep image size small - 2GB virtual disk
+              virtualisation.diskSize = 2 * 1024;
             }
           ];
         };
