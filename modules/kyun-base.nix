@@ -32,10 +32,24 @@
     autoResize = true;
   };
 
-  # Minimal kernel parameters
+  # Kernel parameters with debugging
   boot.kernelParams = [
     "console=ttyS0,115200"
     "net.ifnames=0"
+    "earlyprintk=serial,ttyS0,115200"
+    "loglevel=7"
+    "boot.shell_on_fail"
+  ];
+
+  # Essential kernel modules for virtio-scsi boot
+  boot.initrd.availableKernelModules = [
+    "virtio_pci"
+    "virtio_scsi"
+    "virtio_blk"
+    "virtio_net"
+    "scsi_mod"
+    "sd_mod"
+    "sr_mod"
   ];
 
   # Cloud-init support - minimal configuration
