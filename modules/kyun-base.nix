@@ -61,6 +61,9 @@
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.PasswordAuthentication = false;
 
+  # Emergency console access - cloud-init will override with SSH keys
+  users.users.root.initialPassword = "nixos";
+
   # Networking - let cloud-init handle it
   networking.useDHCP = false;
   networking.useNetworkd = false;
