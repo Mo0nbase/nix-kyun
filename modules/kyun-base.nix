@@ -18,6 +18,18 @@
     "flakes"
   ];
 
+  # Bootloader - Kyun.host uses /dev/sda (not /dev/vda)
+  boot.loader.grub = {
+    enable = true;
+    device = lib.mkForce "/dev/sda";
+  };
+
+  # Root filesystem - Kyun.host uses /dev/sda1
+  fileSystems."/" = lib.mkForce {
+    device = "/dev/sda1";
+    fsType = "ext4";
+  };
+
   # Debug kernel parameters - keep for troubleshooting boot issues
   boot.kernelParams = [
     "console=ttyS0,115200"

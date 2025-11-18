@@ -10,7 +10,7 @@
     }:
     {
       packages = {
-        # Minimal qcow2 image - let nixos-generators use its defaults
+        # Minimal qcow2 image - configured for Kyun.host (/dev/sda)
         default = inputs.nixos-generators.nixosGenerate {
           inherit system;
           format = "qcow";
