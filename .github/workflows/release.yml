@@ -24,10 +24,14 @@ jobs:
               with:
                   extra_nix_config: |
                       experimental-features = nix-command flakes
+                      # Ensure reproducible builds
+                      sandbox = true
+                      max-jobs = auto
 
             - name: Build and prepare image
               run: |
-                  nix build .#default -L
+                  # Clean build without any cached artifacts
+                  nix build .#default -L --option pure-eval true
 
                   # Copy image out of read-only Nix store and create checksum
                   mkdir -p dist
