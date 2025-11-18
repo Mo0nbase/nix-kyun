@@ -12,7 +12,7 @@
       packages = {
         # Build the qcow2 image using nixos-generators
         default = inputs.nixos-generators.nixosGenerate {
-          inherit pkgs;
+          inherit system;
 
           # Use qcow2 format for cloud/VPS providers
           format = "qcow";
@@ -29,6 +29,9 @@
 
               # Set a reasonable disk size
               virtualisation.diskSize = 10 * 1024; # 10GB
+
+              # Don't set nixpkgs.config, let nixos-generators handle it
+              nixpkgs.config = lib.mkForce { };
             }
           ];
         };

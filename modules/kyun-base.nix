@@ -37,7 +37,7 @@
     device = lib.mkDefault "/dev/vda"; # nixos-generators will override if needed
   };
 
-  boot.loader.timeout = 3;
+  boot.loader.timeout = lib.mkDefault 3;
 
   # Enable serial console for headless operation and disable predictable interface names
   boot.kernelParams = [
@@ -177,7 +177,7 @@
   };
 
   # Allow unfree packages if needed
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = lib.mkDefault true;
 
   # Minimal system packages
   environment.systemPackages = with pkgs; [
