@@ -64,6 +64,11 @@
   # Emergency console access - cloud-init will override with SSH keys
   users.users.root.initialPassword = "nixos";
 
+  # Allow cloud-init to manage sudo configuration for created users
+  # Don't let NixOS security defaults interfere with cloud-init's user setup
+  security.sudo.wheelNeedsPassword = lib.mkDefault false;
+  security.sudo.execWheelOnly = lib.mkDefault false;
+
   # Networking - let cloud-init handle it
   networking.useDHCP = false;
   networking.useNetworkd = false;
