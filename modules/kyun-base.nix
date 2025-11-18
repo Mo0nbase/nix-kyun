@@ -58,6 +58,10 @@
   # QEMU guest agent
   services.qemuGuest.enable = true;
 
+  # Minimize image size
+  documentation.enable = lib.mkDefault false;
+  documentation.nixos.enable = lib.mkDefault false;
+
   # System state version
   system.stateVersion = "24.11";
 }
