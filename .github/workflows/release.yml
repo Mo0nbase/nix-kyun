@@ -4,10 +4,6 @@ on:
     release:
         types: [created]
     workflow_dispatch:
-        inputs:
-            tag:
-                description: "Tag to release (optional)"
-                required: false
 
 jobs:
     build-image:
@@ -16,71 +12,40 @@ jobs:
             contents: write
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+            - uses: actions/checkout@v4
 
-            - name: Install Nix
-              uses: cachix/install-nix-action@v25
+            - uses: cachix/install-nix-action@v25
               with:
                   extra_nix_config: |
                       experimental-features = nix-command flakes
-                      # Force fresh build - no cache
-                      narinfo-cache-negative-ttl = 0
-                      trusted-public-keys =
-                      substituters = https://cache.nixos.org
+                      max-jobs = auto
+                      cores = 0
 
-            - name: Clear any cached Nix store
+            - name: Build image
+              run: nix build .#default -L
+
+            - name: Prepare release
               run: |
-                  # Remove any potentially corrupted paths
-                  sudo rm -rf /nix/store/qj19bdpqxfbai07rcv7ibh492pcaczy8-getty || true
-                  nix-collect-garbage -d || true
-
-            - name: Build and prepare image
-              run: |
-                  # Build from scratch - rebuild forces redownload of all dependencies
-                  nix build .#default -L --option substitute false --max-jobs 1
-
-                  # Copy image out of read-only Nix store and create checksum
                   mkdir -p dist
                   cp result/nixos.qcow2 dist/kyun-nixos-${{ github.ref_name }}.qcow2
-                  cd dist
-                  sha256sum kyun-nixos-${{ github.ref_name }}.qcow2 > kyun-nixos-${{ github.ref_name }}.qcow2.sha256
+                  sha256sum dist/kyun-nixos-${{ github.ref_name }}.qcow2 > dist/kyun-nixos-${{ github.ref_name }}.qcow2.sha256
 
-            - name: Upload image to release
-              uses: softprops/action-gh-release@v1
+            - name: Upload to release
               if: github.event_name == 'release'
+              uses: softprops/action-gh-release@v1
               with:
-                  files: |
-                      dist/kyun-nixos-${{ github.ref_name }}.qcow2
-                      dist/kyun-nixos-${{ github.ref_name }}.qcow2.sha256
+                  files: dist/*
                   body: |
                       ## NixOS Cloud Image for Kyun.host
 
-                      ### Installation
-
-                      1. Download `kyun-nixos-${{ github.ref_name }}.qcow2`
-                      2. Verify checksum: `sha256sum -c kyun-nixos-${{ github.ref_name }}.qcow2.sha256`
-                      3. Upload to kyun.host dashboard
-
-                      ### Features
-                      - NixOS 24.11
-                      - Cloud-init support (NoCloud datasource via /dev/sr1)
-                      - Static networking (IPv4/IPv6)
-                      - QEMU guest agent
-                      - ext4 filesystem
-                      - BIOS boot (GPT/hybrid partitioning)
-                      - Serial console enabled (ttyS0)
-
-                      See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for documentation.
+                      Download, verify checksum, and upload to kyun.host dashboard.
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Upload artifact (workflow dispatch)
+            - name: Upload artifact
               if: github.event_name == 'workflow_dispatch'
               uses: actions/upload-artifact@v4
               with:
                   name: kyun-nixos-image
-                  path: |
-                      dist/kyun-nixos-${{ github.ref_name }}.qcow2
-                      dist/kyun-nixos-${{ github.ref_name }}.qcow2.sha256
-                  retention-days: 30
+                  path: dist/*
+                  retention-days: 7
