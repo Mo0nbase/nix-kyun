@@ -1,4 +1,5 @@
-# nixos-danbo
+
+<img width="79" height="20" alt="danbo" src="https://github.com/user-attachments/assets/e9638863-e792-4923-920f-4f89627b07cd" />
 
 **Minimal NixOS cloud image for [kyun.host](https://kyun.host) danbo!**
 
