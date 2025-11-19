@@ -1,6 +1,4 @@
-#WARNING THIS IS CURRENTLY UNTESTED AND SHOULD NOT BE USED
-
-# NixOS Cloud Image for Kyun.host
+# Danbo - NixOS Cloud Image for Kyun.host
 
 A production-ready NixOS qcow2 cloud image builder for [kyun.host](https://kyun.host) VPS hosting with full cloud-init support.
 
@@ -20,7 +18,7 @@ A production-ready NixOS qcow2 cloud image builder for [kyun.host](https://kyun.
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd nix-kyun
+cd nix-danbo
 
 # Build the qcow2 image
 nix build
@@ -59,7 +57,7 @@ The NixOS image:
 
 ### Base System
 
-Edit `modules/kyun-base.nix` to customize:
+Edit `modules/danbo-base.nix` to customize:
 
 ```nix
 # Add packages
@@ -143,7 +141,7 @@ nix flake update
 
 # Build specific outputs
 nix build .#default
-nix build .#nixosConfigurations.kyun-cloud-init.config.system.build.toplevel
+nix build .#nixosConfigurations.danbo-cloud-init.config.system.build.toplevel
 
 # Enter development shell
 nix develop

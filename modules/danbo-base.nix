@@ -26,19 +26,18 @@
   };
 
   # Root filesystem - let nixos-generators determine the device
-  # The /dev/sda1 assumption may be wrong
   fileSystems."/" = lib.mkDefault {
     fsType = "ext4";
     autoResize = true;
   };
 
-  # Kernel parameters with debugging
   boot.kernelParams = [
     "console=ttyS0,115200"
     "net.ifnames=0"
-    "earlyprintk=serial,ttyS0,115200"
-    "loglevel=7"
-    "boot.shell_on_fail"
+    # DEBUG
+    # "earlyprintk=serial,ttyS0,115200"
+    # "loglevel=7"
+    # "boot.shell_on_fail"
   ];
 
   # Essential kernel modules for virtio-scsi boot
@@ -52,7 +51,7 @@
     "sr_mod"
   ];
 
-  # Cloud-init support - minimal configuration
+  # Cloud-init support
   services.cloud-init.enable = true;
   services.cloud-init.network.enable = true;
 
@@ -60,9 +59,6 @@
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.PasswordAuthentication = false;
-
-  # Emergency console access - cloud-init will override with SSH keys
-  users.users.root.initialPassword = "nixos";
 
   # Allow cloud-init to manage sudo configuration for created users
   # Don't let NixOS security defaults interfere with cloud-init's user setup

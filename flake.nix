@@ -1,5 +1,5 @@
 {
-  description = "Kyun.host cloud-init qcow2 image builder";
+  description = "Danbo cloud-init qcow2 image builder for kyun.host";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
@@ -26,10 +26,10 @@
 
       flake = {
         nixosConfigurations = {
-          kyun-cloud-init = nixpkgs.lib.nixosSystem {
+          danbo-cloud-init = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
-              ./modules/kyun-base.nix
+              ./modules/danbo-base.nix
             ];
           };
         };

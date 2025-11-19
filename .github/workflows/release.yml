@@ -22,8 +22,8 @@ jobs:
             - name: Prepare release
               run: |
                   mkdir -p dist
-                  cp result/nixos.qcow2 dist/kyun-nixos-${{ github.ref_name }}.qcow2
-                  sha256sum dist/kyun-nixos-${{ github.ref_name }}.qcow2 > dist/kyun-nixos-${{ github.ref_name }}.qcow2.sha256
+                  cp result/nixos.qcow2 dist/nixos-danbo-${{ github.ref_name }}.qcow2
+                  sha256sum dist/nixos-danbo-${{ github.ref_name }}.qcow2 > dist/nixos-danbo-${{ github.ref_name }}.qcow2.sha256
 
             - name: Upload to release
               if: github.event_name == 'release'
@@ -31,7 +31,7 @@ jobs:
               with:
                   files: dist/*
                   body: |
-                      ## NixOS Cloud Image for Kyun.host
+                      ## Danbo - NixOS Cloud Image for Kyun.host
 
                       Download, verify checksum, and upload to kyun.host dashboard.
               env:
@@ -41,6 +41,6 @@ jobs:
               if: github.event_name == 'workflow_dispatch'
               uses: actions/upload-artifact@v4
               with:
-                  name: kyun-nixos-image
+                  name: nixos-danbo-image
                   path: dist/*
                   retention-days: 7
